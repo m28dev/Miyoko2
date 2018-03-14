@@ -1,0 +1,59 @@
+#dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(45, 45, 45, 0.5);
+    z-index: 10;
+}
+
+#form-box {
+    background-color: #ffffff;
+    padding: 1.5rem 3rem;
+    font-size: 3rem;
+}
+
+#form-box input[type="text"] {
+    font-size: 100%;
+    line-height: 1.5;
+    padding: 0.25rem;
+}
+
+.items {
+    margin-bottom: 8rem;
+}
+
+.item-box {
+    margin-bottom: 2.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.buttons button,
+.buttons input[type="button"] {
+    display: inline-block;
+    font-size: 2.5rem;
+    border-radius: 20px;
+    color: #FFFFFF;
+    padding: 2rem 4rem;
+}
+
+.buttons .ok {
+    background: #3D94F6;
+}
+
+.buttons .cancel {
+    background: #7c7c7c;
+}
