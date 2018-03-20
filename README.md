@@ -1,26 +1,41 @@
 # Miyoko
 
-## 概要
+## Description
 受付のミヨコさんはお客さんの顔を覚えます。
 
-## セットアップ
-## AWS Resource
-1. S3バケット作成(Static Website Hosting)
-2. Amazon CloudFront作成
-3. Amazon DynamoDB作成
-4. Amazon Rekognition作成
+![overview](https://user-images.githubusercontent.com/29790650/37645713-f87e4c5c-2c6a-11e8-877f-13ab60e77b12.png)
 
-顔の取り込みで使用しているWeb APIのMediaDevicesはSecure Contextsでのみ動作するためCloudFrontを利用します
+## Installation
+### AWS Resources
+まずAmazon Rekognitionの顔コレクションを作成します。作成後、ARNをコピーしておいてください。
 
-## Application
-1. $ npm build
-2. publicとbuildの内容をS3にコピー
+```
+$ aws rekognition create-collection --collection-id 'miyoko-test'
+```
 
-## Authentication
-- Amazon Cognito Identity Pool作成
-- GoogleでOIDC
-- .envにIDプールとクライアントIDを記述
+残りはCloudFormationのテンプレート(template.yaml)から作成できます。RekognitionのARNとGoogleのOAuth2.0 Client IDを用意しておいてください。
+
+CloudFormationスタックの詳細は以下です。
+
+- DynamoDBTable: Rekognitionが返したFaceIdに対する名前と会社名を保存します。
+- CognitoIdPool: Google Sign-Inで認証し、AWSリソースに対する一時的なアクセス許可をユーザーへ与えます。
+- MiyokoRole: Cognitoで認証されたユーザーに与えられるロールです。
+- CognitoAttachedRole: "CognitoIdPool"と"MiyokoRole"を関連付けます。
+
+### Authentication
+- Google Sign-Inをセットアップします。（詳細は「Amazon Cognito フェデレーテッドアイデンティティ」のドキュメントを参照してください）
+- .envファイルをルートディレクトリに作成し、IDプールとGoogleクライアントIDを記述する。
+
+```
+POOL_ID=<POOL_ID>
+CLIENT_ID=<GoogleクライアントID>
+```
+
+## Usage
+```
+$ npm start
+```
 
 ## TODO
-- [ ] セットアップをAWS CloudFormationにする
+- [x] セットアップをAWS CloudFormationにする
 - [ ] アクセストークンの期限が切れた場合の更新処理

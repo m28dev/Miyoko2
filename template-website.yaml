@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters: 
+  S3BucketName:
+    Type: String
+    Description: for Static Website Hosting Bucket
+
+Resources: 
+  Website: 
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: !Ref S3BucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  SecureWebsite: 
+    Type: AWS::CloudFront::Distribution
+    Properties: 
+      DistributionConfig: 
+        DefaultCacheBehavior: 
+          ForwardedValues: 
+            QueryString: false
+          TargetOriginId: s3-miyoko
+          ViewerProtocolPolicy: https-only
+        DefaultRootObject: index.html
+        Enabled: true
+        Origins: 
+          -
+            DomainName: !GetAtt Website.WebsiteURL
+            Id: s3-miyoko
+            CustomOriginConfig: 
+              OriginProtocolPolicy: http-only

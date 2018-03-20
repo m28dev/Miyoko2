@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters: 
+  ClientId: 
+    Type: String
+    Description: Google's OAuth 2.0 client ID
+  RekognitionArn:
+    Type: String
+    Description: AWS Rekognition Collection ARN
+
+Resources: 
+  DynamoDBTable: 
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: faceId
+          AttributeType: S
+      KeySchema: 
+        - 
+          AttributeName: faceId
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: miyokoMemory
+
+  CognitoIdPool: 
+    Type: "AWS::Cognito::IdentityPool"
+    Properties:
+      IdentityPoolName: miyokoPool
+      AllowUnauthenticatedIdentities: false
+      SupportedLoginProviders: 
+        accounts.google.com: !Ref ClientId
+
+  MiyokoRole: 
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement: 
+          - 
+            Effect: Allow
+            Principal: 
+              Federated: 
+                cognito-identity.amazonaws.com
+            Action: 
+              sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals: 
+                "cognito-identity.amazonaws.com:aud": !Ref CognitoIdPool
+              ForAnyValue:StringLike: 
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies: 
+        - 
+          PolicyName: miyoko-policy
+          PolicyDocument: 
+            Version: 2012-10-17
+            Statement: 
+              - 
+                Effect: Allow
+                Action: 
+                  - dynamodb:PutItem
+                  - rekognition:IndexFaces
+                  - dynamodb:GetItem
+                  - rekognition:SearchFacesByImage
+                Resource: 
+                  - !GetAtt DynamoDBTable.Arn
+                  - !Ref RekognitionArn
+      RoleName: miyoko-role
+
+  CognitoAttachedRole:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref CognitoIdPool
+      Roles: 
+        authenticated: !GetAtt MiyokoRole.Arn
