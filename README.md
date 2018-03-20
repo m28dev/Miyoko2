@@ -24,7 +24,7 @@ CloudFormationスタックの詳細は以下です。
 
 ### Authentication
 - Google Sign-Inをセットアップします。（詳細は「Amazon Cognito フェデレーテッドアイデンティティ」のドキュメントを参照してください）
-- .envファイルをルートディレクトリに作成し、IDプールとGoogleクライアントIDを記述する。
+- .envファイルをルートディレクトリに作成し、IDプールとGoogleクライアントIDを記述します。
 
 ```
 POOL_ID=<POOL_ID>
