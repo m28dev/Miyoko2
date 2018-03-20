@@ -9,9 +9,9 @@ class App extends Component {
     constructor() {
         super();
 
-        // リージョンをバージニアに固定
+        // リージョンを設定
         AWS.config.update({
-            region: 'us-east-1'
+            region: 'ap-northeast-1'
         });
 
         this.state = {
